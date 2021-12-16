@@ -28,12 +28,13 @@ class colors:
     YELLOW = '\033[0;33m'
 
 
-def cc(f):
-    f = round(f, 2)
-    if f < 0:
-        return f'{colors.RED + "-$" + str(abs(f)) + colors.NONE}'
-    else:
-        return f'{colors.GREEN + "$" + str(abs(f)) + colors.NONE}'
+def cc(f, usd=True):
+    neg = True if f < 0 else False
+    string = f'{abs(f):,.2f}'
+    pre = "$" if usd else ""
+    pre = colors.RED + f'-{pre}' if neg else colors.GREEN + pre
+    post = "%" if not usd else ""
+    return f'{pre}{string}{post}' + colors.NONE
 
 
 def getCoinData(name):
@@ -41,7 +42,6 @@ def getCoinData(name):
         'content-type': 'application/json',
         'x-api-key': f'{key}'
     }
-
     payload = json.dumps({
         "currency": "USD",
         "code": f'{name}',

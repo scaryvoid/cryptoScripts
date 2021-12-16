@@ -44,27 +44,37 @@ def main():
             obj.addTrans(float(quantity), float(price))
 
     # print coin info
+    profits = []
+    invested = []
     for obj in objs.values():
         buys = []
+        coins = []
         currentPrice = float(getCoinData(obj.name)["rate"])
         if not currentPrice:
             continue
 
         print(f'{obj.name} {currentPrice:.4f}:')
-        text = [["Deposit", "Price", "Profit"]]
+        text = [["Coins", "Price", "Invested", "Profit"]]
         for deposit, price in zip(obj.deposits, obj.prices):
             buyValue = deposit * price
             curValue = deposit * currentPrice
             profit = curValue - buyValue
             buys.append(buyValue)
-            text.append([f'{deposit:.4f}', f'${price:.2f}', f'{cc(profit)}'])
+            coins.append(deposit)
+            text.append([f'{deposit:,.4f}', f'${price:,.2f}', f'{cc(buyValue)}', f'{cc(profit)}'])
 
         totBuyValue = sum(buys)
         totCurValue = sum(obj.deposits) * currentPrice
         totProfit = totCurValue - totBuyValue
-        text.append([f'Total Buy:{cc(totBuyValue)}', f'Total Value:{cc(totCurValue)}', f'Total Profit:{cc(totProfit)}'])
+        text.append([f'Total Coins:{sum(coins):,.4f}', f'Total Buy:{cc(totBuyValue)}', f'Total Value:{cc(totCurValue)}', f'Total Profit:{cc(totProfit)}'])
+        profits.append(totProfit)
+        invested.append(totBuyValue)
         print(tabulate.tabulate(text, headers="firstrow", tablefmt="fancy_grid"))
         print("")
+
+    totText = [["Total Invested", "Total Profit", "% Profit"]]
+    totText.append([f'${sum(invested):,.2f}', f'{cc(sum(profits))}', f'{cc((sum(profits) / sum(invested)) * 100, False)}'])
+    print(tabulate.tabulate(totText, headers="firstrow", tablefmt="fancy_grid"))
 
 
 if __name__ == "__main__":
