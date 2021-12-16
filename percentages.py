@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/home/scaryvoid/venv/cryptoscriptsenv/bin/python
 
 # print percentages of given amount
 
@@ -9,7 +9,7 @@ def main():
     parser = argparse.ArgumentParser(description='Look at depths of dips.',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('initialamt', type=float, help='Amount to divide up.')
-    parser.add_argument('percentages', metavar='<n>', type=float, nargs=argparse.REMAINDER, help='Percentages to divide initialamt into.')
+    parser.add_argument('percentages', metavar='<percentages>', type=float, nargs=argparse.REMAINDER, help='Percentages to divide initialamt into.')
     args = parser.parse_args()
     args.percentages.sort(reverse=True)
     

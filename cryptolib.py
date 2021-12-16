@@ -2,6 +2,22 @@
 
 # library for crypto scripts
 
+import configparser, sys, os, json, requests
+
+config = configparser.RawConfigParser()
+configPath = os.path.join('/', 'home', 'scaryvoid', 'cryptoScripts', 'crypto.cfg')
+url = "https://api.livecoinwatch.com/coins/single"
+if not os.path.exists(configPath):
+    print(f'Error: {configPath} not found')
+    sys.exit()
+
+config.read(configPath)
+try:
+    key = config.get("key", "key")
+except KeyError:
+    print("Error: no key found")
+    sys.exit()
+
 
 class colors:
     RED = '\033[0;31m'
@@ -15,6 +31,21 @@ class colors:
 def cc(f):
     f = round(f, 2)
     if f < 0:
-        return f'{colors.RED + "$" + str(abs(f)) + colors.NONE}'
+        return f'{colors.RED + "-$" + str(abs(f)) + colors.NONE}'
     else:
         return f'{colors.GREEN + "$" + str(abs(f)) + colors.NONE}'
+
+
+def getCoinData(name):
+    headers = {
+        'content-type': 'application/json',
+        'x-api-key': f'{key}'
+    }
+
+    payload = json.dumps({
+        "currency": "USD",
+        "code": f'{name}',
+        "meta": False
+    })
+    response = requests.request("POST", url, headers=headers, data=payload)
+    return response.json()

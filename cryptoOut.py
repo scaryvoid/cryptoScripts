@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/home/scaryvoid/venv/cryptoscriptsenv/bin/python
 
 import argparse, tabulate
 

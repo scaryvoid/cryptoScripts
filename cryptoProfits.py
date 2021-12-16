@@ -1,13 +1,9 @@
-#!cryptoscriptsenv/bin/python
+#!/home/scaryvoid/venv/cryptoscriptsenv/bin/python
 
 # import csv of transactions and print profit data
 
-import argparse, os, tabulate, requests, json, sys, configparser
-from cryptolib import cc
-
-config = configparser.RawConfigParser()
-configPath = "crypto.cfg"
-url = "https://api.livecoinwatch.com/coins/single"
+import argparse, os, tabulate, sys
+from cryptolib import cc, getCoinData
 
 
 class Coin:
@@ -27,27 +23,9 @@ def main():
     parser.add_argument('filepath', help='Path of csv to import.')
     args = parser.parse_args()
 
-    # populate objects
     if not os.path.exists(args.filepath):
         print("Error: file not found")
         sys.exit()
-
-    # get config
-    if not os.path.exists(configPath):
-        print(f'Error: {configPath} not found')
-        sys.exit()
-
-    config.read(configPath)
-    try:
-        key = config.get("key", "key")
-    except KeyError:
-        print("Error: no key found")
-        sys.exit()
-
-    headers = {
-        'content-type': 'application/json',
-        'x-api-key': f'{key}'
-    }
 
     objs = {}
     with open(args.filepath, 'r') as f:
@@ -68,14 +46,7 @@ def main():
     # print coin info
     for obj in objs.values():
         buys = []
-        payload = json.dumps({
-            "currency": "USD",
-            "code": f'{obj.name}',
-            "meta": False
-        })
-        response = requests.request("POST", url, headers=headers, data=payload)
-        res = response.json()
-        currentPrice = float(res["rate"])
+        currentPrice = float(getCoinData(obj.name)["rate"])
         if not currentPrice:
             continue
 

@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/home/scaryvoid/venv/cryptoscriptsenv/bin/python
 
 # looking into depth of dips
 
@@ -10,7 +10,7 @@ def main():
     parser = argparse.ArgumentParser(description='Look at depths of dips.',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('filepath', help='File to analize.')
-    parser.add_argument('-s', metavar='<n>', nargs=1, default=['2001-01-01'], help='Day to start analizing (example: 2001-01-01).')
+    parser.add_argument('-s', metavar='<startdate>', nargs=1, default=['2001-01-01'], help='Day to start analizing (example: 2001-01-01).')
     args = parser.parse_args()
 
     dates = []
