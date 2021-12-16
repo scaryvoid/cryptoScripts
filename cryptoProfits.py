@@ -46,7 +46,7 @@ def main():
     # print coin info
     profits = []
     invested = []
-    for obj in objs.values():
+    for key, obj in sorted(objs.items()):
         buys = []
         coins = []
         currentPrice = float(getCoinData(obj.name)["rate"])
@@ -54,19 +54,19 @@ def main():
             continue
 
         print(f'{obj.name} {currentPrice:.4f}:')
-        text = [["Coins", "Price", "Invested", "Profit"]]
+        text = [["Coins", "Price", "Invested", "Profit", "% Profit"]]
         for deposit, price in zip(obj.deposits, obj.prices):
             buyValue = deposit * price
             curValue = deposit * currentPrice
             profit = curValue - buyValue
             buys.append(buyValue)
             coins.append(deposit)
-            text.append([f'{deposit:,.4f}', f'${price:,.2f}', f'{cc(buyValue)}', f'{cc(profit)}'])
+            text.append([f'{deposit:,.4f}', f'${price:,.2f}', f'{cc(buyValue)}', f'{cc(profit)}', f'{cc((profit / buyValue) * 100, False)}'])
 
         totBuyValue = sum(buys)
         totCurValue = sum(obj.deposits) * currentPrice
         totProfit = totCurValue - totBuyValue
-        text.append([f'Total Coins:{sum(coins):,.4f}', f'Total Buy:{cc(totBuyValue)}', f'Total Value:{cc(totCurValue)}', f'Total Profit:{cc(totProfit)}'])
+        text.append([f'Total Coins:{sum(coins):,.4f}', f'Total Buy:{cc(totBuyValue)}', f'Total Value:{cc(totCurValue)}', f'Total Profit:{cc(totProfit)}', f'% Profit:{cc((totProfit / totBuyValue) * 100, False)}'])
         profits.append(totProfit)
         invested.append(totBuyValue)
         print(tabulate.tabulate(text, headers="firstrow", tablefmt="fancy_grid"))
