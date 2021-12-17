@@ -1,9 +1,9 @@
-#!/home/scaryvoid/venv/cryptoscriptsenv/bin/python
+#!/home/scaryvoid/venv/cryptoscripts/bin/python
 
 # import csv of transactions and print profit data
 
 import argparse, os, tabulate, sys
-from cryptolib import cc, getCoinData
+from cryptolib import cc, getCoinDataList
 
 
 class Coin:
@@ -11,6 +11,7 @@ class Coin:
         self.name = name
         self.deposits = []
         self.prices = []
+        self.currentPrice = 0
 
     def addTrans(self, quantity, price):
         self.deposits.append(quantity)
@@ -27,6 +28,7 @@ def main():
         print("Error: file not found")
         sys.exit()
 
+    # parse csv file and create coin objs
     objs = {}
     with open(args.filepath, 'r') as f:
         for line in f:
@@ -43,28 +45,34 @@ def main():
             obj = objs.get(base)
             obj.addTrans(float(quantity), float(price))
 
+    # get current prices for coins
+    json = getCoinDataList()
+    for key, obj in objs.items():
+        for d in json:
+            if d["code"] == key:
+                obj.currentPrice = d["rate"]
+
     # print coin info
     profits = []
     invested = []
     for key, obj in sorted(objs.items()):
         buys = []
         coins = []
-        currentPrice = float(getCoinData(obj.name)["rate"])
-        if not currentPrice:
+        if not obj.currentPrice:
             continue
 
-        print(f'{obj.name} {currentPrice:.4f}:')
+        print(f'{obj.name} {obj.currentPrice:.4f}:')
         text = [["Coins", "Price", "Invested", "Profit", "% Profit"]]
         for deposit, price in zip(obj.deposits, obj.prices):
             buyValue = deposit * price
-            curValue = deposit * currentPrice
+            curValue = deposit * obj.currentPrice
             profit = curValue - buyValue
             buys.append(buyValue)
             coins.append(deposit)
             text.append([f'{deposit:,.4f}', f'${price:,.2f}', f'{cc(buyValue)}', f'{cc(profit)}', f'{cc((profit / buyValue) * 100, False)}'])
 
         totBuyValue = sum(buys)
-        totCurValue = sum(obj.deposits) * currentPrice
+        totCurValue = sum(obj.deposits) * obj.currentPrice
         totProfit = totCurValue - totBuyValue
         text.append([f'Total Coins:{sum(coins):,.4f}', f'Total Buy:{cc(totBuyValue)}', f'Total Value:{cc(totCurValue)}', f'Total Profit:{cc(totProfit)}', f'% Profit:{cc((totProfit / totBuyValue) * 100, False)}'])
         profits.append(totProfit)

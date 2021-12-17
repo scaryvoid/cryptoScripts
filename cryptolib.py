@@ -6,7 +6,7 @@ import configparser, sys, os, json, requests
 
 config = configparser.RawConfigParser()
 configPath = os.path.join('/', 'home', 'scaryvoid', 'cryptoScripts', 'crypto.cfg')
-url = "https://api.livecoinwatch.com/coins/single"
+
 if not os.path.exists(configPath):
     print(f'Error: {configPath} not found')
     sys.exit()
@@ -38,6 +38,7 @@ def cc(f, usd=True):
 
 
 def getCoinData(name):
+    url = "https://api.livecoinwatch.com/coins/single"    
     headers = {
         'content-type': 'application/json',
         'x-api-key': f'{key}'
@@ -48,4 +49,21 @@ def getCoinData(name):
         "meta": False
     })
     response = requests.request("POST", url, headers=headers, data=payload)
+    return response.json()
+
+def getCoinDataList():
+    url = "https://api.livecoinwatch.com/coins/list"
+    payload = json.dumps({
+        "currency": "USD",
+        "sort": "rank",
+        "order": "ascending",
+        "offset": 0,
+        "limit": 100,
+        "meta": False
+    })
+    headers = {
+        'content-type': 'application/json',
+        'x-api-key': f'{key}'
+    }
+    response = requests.request("POST", url, headers=headers, data=payload)    
     return response.json()
