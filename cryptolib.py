@@ -1,4 +1,4 @@
-#!cryptoscriptsenv/bin/python
+#!/home/scaryvoid/venv/cryptoscripts/bin/python
 
 # library for crypto scripts
 

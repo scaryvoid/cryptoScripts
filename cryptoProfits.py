@@ -19,9 +19,12 @@ class Coin:
 
 
 def main():
+    # todo: Currently only looks at deposits. Factor in withdraw? Trades?
     parser = argparse.ArgumentParser(description='Import csv of transactions and pring profit data.',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('filepath', help='Path of csv to import.')
+    parser.add_argument('-s', metavar='<coin>', type=str, nargs=1, help='single coin')
+    parser.add_argument('-i', metavar='<n>', type=float, nargs=1, help='Speculate price')
     args = parser.parse_args()
 
     if not os.path.exists(args.filepath):
@@ -39,6 +42,10 @@ def main():
             if "deposit" not in trade:
                 continue
 
+            if args.s:
+                if base.lower() not in args.s[0].lower():
+                    continue
+
             if base not in objs.keys():
                 objs[base] = Coin(base)
 
@@ -46,11 +53,15 @@ def main():
             obj.addTrans(float(quantity), float(price))
 
     # get current prices for coins
-    json = getCoinDataList()
-    for key, obj in objs.items():
-        for d in json:
-            if d["code"] == key:
-                obj.currentPrice = d["rate"]
+    if args.i:
+        for key, obj in objs.items():
+            obj.currentPrice = args.i[0]
+    else:
+        json = getCoinDataList()
+        for key, obj in objs.items():
+            for d in json:
+                if d["code"] == key:
+                    obj.currentPrice = d["rate"]
 
     # print coin info
     profits = []
@@ -62,7 +73,7 @@ def main():
             continue
 
         print(f'{obj.name} {obj.currentPrice:.4f}:')
-        text = [["Coins", "Price", "Invested", "Profit", "% Profit"]]
+        text = [["# Coins", "$ Per Coin", "$ Invested", "$ Profit", "% Profit"]]
         for deposit, price in zip(obj.deposits, obj.prices):
             buyValue = deposit * price
             curValue = deposit * obj.currentPrice

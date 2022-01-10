@@ -1,4 +1,4 @@
-#!/home/scaryvoid/venv/cryptoscriptsenv/bin/python
+#!/home/scaryvoid/venv/cryptoscripts/bin/python
 
 # give me 3 buy limits based on current price and desired percentages
 

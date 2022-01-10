@@ -1,4 +1,4 @@
-#!/home/scaryvoid/venv/cryptoscriptsenv/bin/python
+#!/home/scaryvoid/venv/cryptoscripts/bin/python
 
 # looking into depth of dips
 
