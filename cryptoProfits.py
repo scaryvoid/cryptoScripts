@@ -2,7 +2,7 @@
 
 # import csv of transactions and print profit data
 
-import argparse, os, tabulate, sys
+import argparse, os, tabulate, sys, statistics
 from cryptolib import cc, getCoinDataList
 
 
@@ -38,7 +38,8 @@ def main():
             if "date,trade" in line.lower():
                 continue
 
-            date, trade, quantity, base, quote, feecurrency, feetype, price, sincetrade = line.split(',')
+            #date, trade, quantity, base, quote, feecurrency, feetype, price, sincetrade = line.split(',')
+            date, trade, base, quote, quantity, quotequantity, feecurrency, feetype, price, sincetrade, notes = line.split(',')
             if "deposit" not in trade:
                 continue
 
@@ -73,19 +74,20 @@ def main():
             continue
 
         print(f'{obj.name} {obj.currentPrice:.4f}:')
-        text = [["# Coins", "$ Per Coin", "$ Invested", "$ Profit", "% Profit"]]
+        text = [["# Coins", "$ Per Coin", "$ Invested", "$ Profit", "% Profit", ""]]
         for deposit, price in zip(obj.deposits, obj.prices):
             buyValue = deposit * price
             curValue = deposit * obj.currentPrice
             profit = curValue - buyValue
             buys.append(buyValue)
             coins.append(deposit)
-            text.append([f'{deposit:,.4f}', f'${price:,.2f}', f'{cc(buyValue)}', f'{cc(profit)}', f'{cc((profit / buyValue) * 100, False)}'])
+            text.append([f'{deposit:,.4f}', f'${price:,.2f}', f'{cc(buyValue)}', f'{cc(profit)}', f'{cc((profit / buyValue) * 100, False)}', ""])
 
         totBuyValue = sum(buys)
         totCurValue = sum(obj.deposits) * obj.currentPrice
         totProfit = totCurValue - totBuyValue
-        text.append([f'Total Coins:{sum(coins):,.4f}', f'Total Buy:{cc(totBuyValue)}', f'Total Value:{cc(totCurValue)}', f'Total Profit:{cc(totProfit)}', f'% Profit:{cc((totProfit / totBuyValue) * 100, False)}'])
+        costAvg = sum(buys) / sum(coins)
+        text.append([f'Total Coins:{sum(coins):,.4f}', f'Total Buy:{cc(totBuyValue)}', f'Total Value:{cc(totCurValue)}', f'Total Profit:{cc(totProfit)}', f'% Profit:{cc((totProfit / totBuyValue) * 100, False)}', f'Cost Avg:{cc(costAvg)}'])
         profits.append(totProfit)
         invested.append(totBuyValue)
         print(tabulate.tabulate(text, headers="firstrow", tablefmt="fancy_grid"))
